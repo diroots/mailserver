@@ -63,7 +63,7 @@ services:
     # - ENABLE_POP3=true                       # Enable POP3 protocol
     # - ENABLE_FETCHMAIL=true                  # Enable fetchmail forwarding
     # - DISABLE_RATELIMITING=false             # Enable ratelimiting policy
-    # - DISABLE_CLAMAV=true                    # Disable virus scanning
+      - DISABLE_CLAMAV=true                    # Disable virus scanning
     # - DISABLE_SIGNING=true                   # Disable DKIM/ARC signing
     # - DISABLE_GREYLISTING=true               # Disable greylisting policy
     # - DISABLE_VHOSTS_OWNERSHIP_SET=true     # Disable vhosts directory ownship set (useful, when you have lots of mailboxes)
@@ -94,6 +94,22 @@ services:
     networks:
       - mail_network
       - http_network
+
+  # external uptodate clamav antivirus
+
+  clamav:
+    image: clamav/clamav:stable
+    restart: ${RESTART_MODE}
+    environment:
+      - CLAMAV_NO_MILTERD=false
+    volumes:
+      - ${VOLUMES_ROOT_PATH}/clamav:/var/lib/clamav
+    depends_on:
+      - mailserver
+    networks:
+      - mail_network
+      - http_network
+
 
   # Administration interface
   # https://github.com/hardware/postfixadmin
